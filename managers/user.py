@@ -4,7 +4,8 @@ from werkzeug.exceptions import Unauthorized
 from db import db
 
 
-from managers.auth import AuthManager
+from managers.auth import AuthManager, auth
+from models.booking import Booking
 from models.enums import UserRole
 from models.user import User
 
@@ -35,5 +36,23 @@ class UserManager:
 
     @staticmethod
     def get_bookings(user):
-        if user.role.user:
+        # TODO: to check how it was handled in the previous course
+        query = db.select(Booking)
+
+        if user.role.user == UserRole.user:
+            query = query.filter_by(user_pk=user.pk)
+            return db.session.execute(query).scalars().all()
+        else:
             pass
+
+    @staticmethod
+    def create_booking(user, data):
+        data["user_pk"] = user.pk
+        # data["start_date"] = data["start_date"].strftime("%Y-%m-%d")
+        # data["end_date"] = data["end_date"].strftime("%Y-%m-%d")
+        booking = Booking(**data)
+        db.session.add(booking)
+        db.session.flush()
+        return booking
+
+

@@ -4,5 +4,5 @@ from resources.booking import Booking
 routes = (
     (RegisterUser, "/register"),
     (LoginUser, "/login"),
-    (Booking, "users/bookings"),
+    (Booking, "/users/bookings"),
 )

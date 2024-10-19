@@ -23,7 +23,7 @@ class AuthManager:
     def decode_token(token):
         try:
             result = jwt.decode(
-                token, key=config("SECRET_KEY"), algorithms=config("ALGORITHMS")
+                jwt=token, key=config("SECRET_KEY"), algorithms=config("ALGORITHMS")
             )
             return result["sub"], result["role"]
         except Exception as ex:
@@ -36,7 +36,7 @@ auth = HTTPTokenAuth(scheme="Bearer")
 @auth.verify_token
 def verify_token(token):
     try:
-        user_pk, user_type = AuthManager.decode_token(token)
-        return db.session.execute(db.select(User).filter_by(pk=user_pk).scalar())
+        user_pk, user_role = AuthManager.decode_token(token)
+        return db.session.execute(db.select(User).filter_by(pk=user_pk)).scalar()
     except Exception:
         return Unauthorized("Invalid or missing token")

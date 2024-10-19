@@ -22,3 +22,5 @@ class Booking(db.Model):
     )
     user_pk: Mapped[int] = mapped_column(db.Integer, db.ForeignKey("users.pk"))
     user: Mapped["User"] = relationship("User")
+
+    
