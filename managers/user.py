@@ -32,3 +32,8 @@ class UserManager:
 
         token = AuthManager.encode_token(user)
         return {"token": token}, 201
+
+    @staticmethod
+    def get_bookings(user):
+        if user.role.user:
+            pass

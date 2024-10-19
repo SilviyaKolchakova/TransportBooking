@@ -12,12 +12,13 @@ class UserType(enum.Enum):
 
 
 class BookingStatus(enum.Enum):
-    pending = "pending"
+    in_progress = "in_progress"
     confirmed = "confirmed"
     canceled = "canceled"
+    completed = "completed"
 
 
-class VehicleType(enum.Enum):
-    eight_seats = "8_seats"
-    sixteen_seats = "16_seats"
-    thirty_seats = "30_seats"
+# class VehicleType(enum.Enum):
+#     eight_seats = "8_seats"
+#     sixteen_seats = "16_seats"
+#     thirty_seats = "30_seats"
