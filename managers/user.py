@@ -54,5 +54,3 @@ class UserManager:
         db.session.add(booking)
         db.session.flush()
         return booking
-
-

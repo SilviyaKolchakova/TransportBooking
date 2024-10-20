@@ -1,7 +1,7 @@
 from flask import request
 from flask_restful import Resource
 
-
+from managers.admin import AdminManager
 from managers.auth import auth
 from managers.user import UserManager
 from models import UserRole
@@ -28,6 +28,17 @@ class Booking(Resource):  # create booking and get list of bookings
         return BookingResponseSchema().dump(booking)
 
 
+class BookingConfirm(Resource):
+    @auth.login_required
+    @permission_required(UserRole.admin)
+    def put(self, booking_id):
+        AdminManager.booking_confirm(booking_id)
+        return 204  # може да върнем освен статса и самият букинг
 
 
-
+class BookingCancel(Resource):
+    @auth.login_required
+    @permission_required(UserRole.admin)
+    def put(self, booking_id):
+        AdminManager.booking_cancel(booking_id)
+        return 204  # може да върнем освен статса и самият букинг

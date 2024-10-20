@@ -9,3 +9,4 @@ class BookingResponseSchema(BaseBooking):
     pk = fields.Integer(required=True)
     status = EnumField(BookingStatus, by_value=True)
     created_at = fields.DateTime(required=True)
+    last_modified_at = fields.DateTime(required=True)

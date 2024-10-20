@@ -17,10 +17,11 @@ class Booking(db.Model):
     created_at: Mapped[datetime] = mapped_column(
         db.DateTime, default=datetime.utcnow(), nullable=False
     )
+    last_modified_at: Mapped[datetime] = mapped_column(
+        db.DateTime, default=datetime.utcnow(), onupdate=datetime.utcnow
+    )
     status: Mapped[BookingStatus] = mapped_column(
         db.Enum(BookingStatus), default=BookingStatus.in_progress, nullable=False
     )
     user_pk: Mapped[int] = mapped_column(db.Integer, db.ForeignKey("users.pk"))
     user: Mapped["User"] = relationship("User")
-
-    

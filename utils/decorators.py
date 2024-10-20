@@ -11,10 +11,13 @@ def permission_required(required_role):
             current_user = auth.current_user()
 
             if current_user.role != required_role:
-                raise Forbidden('You do not have access to this resource')
+                raise Forbidden("You do not have access to this resource")
             return func(*args, **kwargs)
+
         return wrapper
+
     return decorator
+
 
 def validate_schema(schema):
     def decorator(func):
@@ -25,6 +28,7 @@ def validate_schema(schema):
             if errors:
                 raise BadRequest(f"Invalid request: {errors}")
             return func(*args, **kwargs)
-        return wrapper
-    return decorator
 
+        return wrapper
+
+    return decorator
