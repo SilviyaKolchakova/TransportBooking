@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from argon2 import PasswordHasher
 from werkzeug.exceptions import Unauthorized
 
@@ -9,7 +11,12 @@ from models.booking import Booking
 from models.enums import UserRole
 from models.user import User
 
+from services.stripe import StripeService
+
+stripe_service = StripeService()
+
 ph = PasswordHasher()
+
 
 
 class UserManager:
@@ -39,7 +46,7 @@ class UserManager:
         # TODO: to check how it was handled in the previous course
         query = db.select(Booking)
 
-        if user.role.user == UserRole.user:
+        if user.role == UserRole.user:
             query = query.filter_by(user_pk=user.pk)
             return db.session.execute(query).scalars().all()
         else:
@@ -48,9 +55,40 @@ class UserManager:
     @staticmethod
     def create_booking(user, data):
         data["user_pk"] = user.pk
-        # data["start_date"] = data["start_date"].strftime("%Y-%m-%d")
-        # data["end_date"] = data["end_date"].strftime("%Y-%m-%d")
+
+        start_date = datetime.strptime(data["start_date"], "%Y-%m-%d")
+        end_date = datetime.strptime(data["end_date"], "%Y-%m-%d")
+        data["rent_days"] = (end_date - start_date).days
+        data["amount"] = (
+            data["rent_days"] * 200
+        )  # TODO: put rent_per_day_price as constant
         booking = Booking(**data)
+        current_user = auth.current_user()
+        customer_name = current_user.full_name
+        customer_email = current_user.email
+
         db.session.add(booking)
+
         db.session.flush()
-        return booking
+
+        return UserManager.pay_booking(booking, customer_name, customer_email)
+
+    @staticmethod
+    def pay_booking(booking, customer_name, customer_email):
+
+        stripe_customer = stripe_service.create_customer(customer_name, customer_email)
+        stripe_customer_id = stripe_customer["id"]
+        url = stripe_service.create_checkout_session(
+            stripe_customer_id, booking.amount, currency="bgn", booking_id=booking.pk
+        )
+        return url
+
+    # @staticmethod
+    # def create_stripe_customer(name, email):
+    #     stripe_customer = stripe_service.create_customer(name, email)
+    #     return stripe_customer["id"]
+
+    # @staticmethod
+    # def create_payment_intent(amount, currency='bgn', customer_id=None):
+    #     payment_intent = stripe_service.create_payment_intent(amount, currency, customer_id)
+    #     return payment_intent["id"]

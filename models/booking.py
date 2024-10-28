@@ -14,6 +14,12 @@ class Booking(db.Model):
     pk: Mapped[int] = mapped_column(primary_key=True)
     start_date: Mapped[datetime] = mapped_column(db.DateTime, nullable=False)
     end_date: Mapped[datetime] = mapped_column(db.DateTime, nullable=False)
+    rent_days: Mapped[int] = mapped_column(
+        db.Integer, nullable=False, default=0, server_default="0"
+    )
+    amount: Mapped[float] = mapped_column(
+        db.Float, nullable=False, default=0, server_default="0"
+    )
     created_at: Mapped[datetime] = mapped_column(
         db.DateTime, default=datetime.utcnow(), nullable=False
     )

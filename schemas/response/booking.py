@@ -10,3 +10,5 @@ class BookingResponseSchema(BaseBooking):
     status = EnumField(BookingStatus, by_value=True)
     created_at = fields.DateTime(required=True)
     last_modified_at = fields.DateTime(required=True)
+    rent_days = fields.Integer(required=True)
+    amount = fields.Float(required=True)

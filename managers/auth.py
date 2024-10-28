@@ -13,7 +13,7 @@ class AuthManager:
     def encode_token(user):
         payload = {
             "sub": user.pk,
-            "exp": datetime.utcnow() + timedelta(hours=2),
+            "exp": datetime.utcnow() + timedelta(hours=8),
             "role": user.role if isinstance(user.role, str) else user.role.name,
             "type": user.type if isinstance(user.type, str) else user.type.name,
         }
