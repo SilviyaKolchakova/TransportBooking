@@ -16,9 +16,3 @@ class BookingStatus(enum.Enum):
     confirmed = "confirmed"
     canceled = "canceled"
     completed = "completed"
-
-
-# class VehicleType(enum.Enum):
-#     eight_seats = "8_seats"
-#     sixteen_seats = "16_seats"
-#     thirty_seats = "30_seats"

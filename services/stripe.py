@@ -31,7 +31,7 @@ class StripeService:
             "payment_method_types[]": "card",
             "line_items[0][price_data][currency]": currency,
             "line_items[0][price_data][product_data][name]": "Booking Payment",
-            "line_items[0][price_data][unit_amount]": amount,
+            "line_items[0][price_data][unit_amount]": amount * 100,
             "line_items[0][quantity]": 1,
             "mode": "payment",
             "success_url": "http://127.0.0.1:5000//payment/success/{CHECKOUT_SESSION_ID}",

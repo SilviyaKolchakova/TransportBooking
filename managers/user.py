@@ -3,6 +3,7 @@ from datetime import datetime
 from argon2 import PasswordHasher
 from werkzeug.exceptions import Unauthorized
 
+from constants import RENT_PRICE_PER_DAY
 from db import db
 
 
@@ -16,7 +17,6 @@ from services.stripe import StripeService
 stripe_service = StripeService()
 
 ph = PasswordHasher()
-
 
 
 class UserManager:
@@ -50,7 +50,7 @@ class UserManager:
             query = query.filter_by(user_pk=user.pk)
             return db.session.execute(query).scalars().all()
         else:
-            pass
+            return db.session.execute(query).scalars().all()
 
     @staticmethod
     def create_booking(user, data):
@@ -60,8 +60,9 @@ class UserManager:
         end_date = datetime.strptime(data["end_date"], "%Y-%m-%d")
         data["rent_days"] = (end_date - start_date).days
         data["amount"] = (
-            data["rent_days"] * 200
+            data["rent_days"] * RENT_PRICE_PER_DAY
         )  # TODO: put rent_per_day_price as constant
+
         booking = Booking(**data)
         current_user = auth.current_user()
         customer_name = current_user.full_name
@@ -83,12 +84,14 @@ class UserManager:
         )
         return url
 
-    # @staticmethod
-    # def create_stripe_customer(name, email):
-    #     stripe_customer = stripe_service.create_customer(name, email)
-    #     return stripe_customer["id"]
-
-    # @staticmethod
-    # def create_payment_intent(amount, currency='bgn', customer_id=None):
-    #     payment_intent = stripe_service.create_payment_intent(amount, currency, customer_id)
-    #     return payment_intent["id"]
+    @staticmethod
+    def retrieve_booking(session_id):
+        retrieve_session = stripe_service.retrieve_checkout_session(session_id)
+        session_booking_id = retrieve_session["metadata"]
+        booking_id = session_booking_id["booking_id"]
+        # TODO : да se prawi proerlka dali ima booking i kakyv mu e statusa. Da vidq kyde da premestq tazi logika
+        booking = db.session.execute(
+            db.select(Booking).filter_by(pk=booking_id)
+        ).scalar()
+        booking.is_paid = True
+        db.session.commit()

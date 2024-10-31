@@ -16,7 +16,7 @@ from utils.decorators import permission_required, validate_schema
 stripe_service = StripeService()
 
 
-class BookingResource(Resource):  # create booking and get list of bookings
+class BookingsResource(Resource):  # create booking and get list of bookings
     @auth.login_required
     def get(self):
         current_user = auth.current_user()
@@ -38,7 +38,7 @@ class BookingConfirm(Resource):
     @auth.login_required
     @permission_required(UserRole.admin)
     def put(self, booking_id):
-        AdminManager.booking_confirm(booking_id)
+        AdminManager.confirm_booking(booking_id)
         return 204  # може да върнем освен статса и самия букинг
 
 
@@ -46,8 +46,17 @@ class BookingCancel(Resource):
     @auth.login_required
     @permission_required(UserRole.admin)
     def put(self, booking_id):
-        AdminManager.booking_cancel(booking_id)
+        AdminManager.cancel_booking(booking_id)
         return 204  # може да върнем освен статса и самия букинг
+
+
+class BookingDelete(Resource):
+    @auth.login_required
+    @permission_required(UserRole.user)
+    def delete(self, booking_id):
+        pass
+
+    # TODO: add functionality
 
 
 class PaymentSuccess(Resource):
@@ -56,17 +65,9 @@ class PaymentSuccess(Resource):
         if not session_id:
             return {"error": "Session ID not provided"}, 400
 
-        retrieve_session = stripe_service.retrieve_checkout_session(session_id)
-        session_booking_id = retrieve_session["metadata"]
-        booking_id = session_booking_id["booking_id"]
-        # TODO : да se prawi proerlka dali ima booking i kakyv mu e statusa. Da vidq kyde da premestq tazi logika
-        booking = db.session.execute(
-            db.select(Booking).filter_by(pk=booking_id)
-        ).scalar()
-        booking.status = "completed"
-        db.session.commit()
+        UserManager.retrieve_booking(session_id)
 
-        # Handle the payment success
+        # TODO: redirect to transport booking app
         return {"message": f"Payment successful for session ID {session_id}"}, 200
 
 

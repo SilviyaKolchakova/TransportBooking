@@ -3,13 +3,13 @@ from datetime import datetime
 from werkzeug.exceptions import BadRequest
 
 from db import db
-from models import Booking
+from models import Booking, Vehicle
 from models.enums import BookingStatus
 
 
 class AdminManager:
     @staticmethod
-    def booking_confirm(booking_id):
+    def confirm_booking(booking_id):
         booking = AdminManager._validate_booking_status(booking_id)
         booking.status = BookingStatus.confirmed
         booking.last_modified = datetime.utcnow()
@@ -18,7 +18,7 @@ class AdminManager:
         db.session.flush()
 
     @staticmethod
-    def booking_cancel(booking_id):
+    def cancel_booking(booking_id):
         booking = AdminManager._validate_booking_status(booking_id)
         booking.status = BookingStatus.canceled
         booking.last_modified = datetime.utcnow()
@@ -35,3 +35,16 @@ class AdminManager:
         if booking.status != BookingStatus.in_progress:
             raise BadRequest("Booking already processed")
         return booking
+
+    @staticmethod
+    def create_vehicle(data):
+        vehicle = Vehicle(**data)
+        db.session.add(vehicle)
+        db.session.flush()
+
+        return vehicle
+
+    @staticmethod
+    def get_all_vehicles():
+        query = db.select(Vehicle)
+        return db.session.execute(query).scalars().all()

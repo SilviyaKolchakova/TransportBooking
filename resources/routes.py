@@ -4,17 +4,18 @@ from resources.booking import (
     BookingCancel,
     PaymentSuccess,
     PaymentFailure,
-    BookingResource,
+    BookingsResource,
 )
-from resources.test_redirect import ExampleResource
+from resources.vehicle import VehiclesResource, VehicleResource
 
 routes = (
     (RegisterUser, "/register"),
     (LoginUser, "/login"),
-    (BookingResource, "/users/bookings"),
+    (BookingsResource, "/users/bookings"),
     (BookingConfirm, "/bookings/<int:booking_id>/confirm"),
     (BookingCancel, "/bookings/<int:booking_id>/cancel"),
-    (ExampleResource, "/example"),
+    (VehiclesResource, "/vehicles"),
+    (VehicleResource, "/vehicles/<int:vehicle_id>"),
     (PaymentSuccess, "/payment/success/<string:session_id>"),
     (PaymentFailure, "/payment/failure"),
 )

@@ -12,3 +12,4 @@ class BookingResponseSchema(BaseBooking):
     last_modified_at = fields.DateTime(required=True)
     rent_days = fields.Integer(required=True)
     amount = fields.Float(required=True)
+    user_pk = fields.Integer(required=True)

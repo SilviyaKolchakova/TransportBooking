@@ -29,5 +29,8 @@ class Booking(db.Model):
     status: Mapped[BookingStatus] = mapped_column(
         db.Enum(BookingStatus), default=BookingStatus.in_progress, nullable=False
     )
+    is_paid: Mapped[bool] = mapped_column(
+        db.Boolean, default=False, server_default="false"
+    )
     user_pk: Mapped[int] = mapped_column(db.Integer, db.ForeignKey("users.pk"))
     user: Mapped["User"] = relationship("User")
