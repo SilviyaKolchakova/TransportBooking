@@ -27,7 +27,7 @@ class AuthManager:
             )
             return result["sub"], result["role"]
         except Exception as ex:
-            return ex
+            raise ex
 
 
 auth = HTTPTokenAuth(scheme="Bearer")
@@ -37,6 +37,9 @@ auth = HTTPTokenAuth(scheme="Bearer")
 def verify_token(token):
     try:
         user_pk, user_role = AuthManager.decode_token(token)
-        return db.session.execute(db.select(User).filter_by(pk=user_pk)).scalar()
+        user = db.session.execute(db.select(User).filter_by(pk=user_pk)).scalar()
+        if not user:
+            raise Unauthorized("Invalid or missing token")
+        return user
     except Exception:
-        return Unauthorized("Invalid or missing token")
+        raise Unauthorized("Invalid or missing token")

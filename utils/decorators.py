@@ -11,7 +11,7 @@ def permission_required(required_role):
             current_user = auth.current_user()
 
             if current_user.role != required_role:
-                raise Forbidden("You do not have access to this resource")
+                raise Forbidden("No access to perform this action")
             return func(*args, **kwargs)
 
         return wrapper

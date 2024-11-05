@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from werkzeug.exceptions import BadRequest
+from werkzeug.exceptions import BadRequest, abort
 
 from db import db
 from models import Booking, Vehicle
@@ -30,7 +30,7 @@ class AdminManager:
     def _validate_booking_status(booking_id):
         booking = db.session.execute(Booking.query.filter_by(pk=booking_id)).scalar()
         if not booking:
-            raise BadRequest("Booking does not exist")
+            abort(404, "Booking not found")
 
         if booking.status != BookingStatus.in_progress:
             raise BadRequest("Booking already processed")

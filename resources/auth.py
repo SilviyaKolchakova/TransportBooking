@@ -14,6 +14,7 @@ class RegisterUser(Resource):
 
 
 class LoginUser(Resource):
+    @validate_schema(UserLoginSchema)
     def post(self):
         data = request.get_json()
         token = UserManager.login(data)
