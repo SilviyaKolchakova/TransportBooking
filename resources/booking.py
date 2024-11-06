@@ -39,7 +39,7 @@ class BookingConfirm(Resource):
     @permission_required(UserRole.admin)
     def put(self, booking_id):
         AdminManager.confirm_booking(booking_id)
-        return 204  # може да върнем освен статса и самия букинг
+        return 204
 
 
 class BookingCancel(Resource):
@@ -54,9 +54,10 @@ class BookingDelete(Resource):
     @auth.login_required
     @permission_required(UserRole.user)
     def delete(self, booking_id):
+        # TODO: add functionality
         pass
 
-    # TODO: add functionality
+# TODO: create class BookingVehicleAssign. Admins to assign vehicle to confirmed bookings.
 
 
 class PaymentSuccess(Resource):

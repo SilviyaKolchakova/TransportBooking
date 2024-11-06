@@ -18,7 +18,7 @@ class BaseBooking(Schema):
     def validate_end(self, value):
         if value <= date.today():
             raise ValidationError("End date must be in the future.")
-        if value < date.today() + timedelta(days=4):
+        if value < date.today() + timedelta(days=3):
             raise ValidationError("End date must be after start date.")
 
 

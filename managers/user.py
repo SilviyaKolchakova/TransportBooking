@@ -58,10 +58,10 @@ class UserManager:
 
         start_date = datetime.strptime(data["start_date"], "%Y-%m-%d")
         end_date = datetime.strptime(data["end_date"], "%Y-%m-%d")
-        data["rent_days"] = (end_date - start_date).days
+        data["rent_days"] = ((end_date - start_date).days) + 1
         data["amount"] = (
             data["rent_days"] * RENT_PRICE_PER_DAY
-        )  # TODO: put rent_per_day_price as constant
+        )
 
         booking = Booking(**data)
         current_user = auth.current_user()
@@ -71,7 +71,7 @@ class UserManager:
         db.session.add(booking)
 
         db.session.flush()
-
+        # If the payment is successful Booking is created with is_paid - True. If not successful payment - is_paid is
         return UserManager.pay_booking(booking, customer_name, customer_email)
 
     @staticmethod
