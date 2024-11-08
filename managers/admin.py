@@ -12,6 +12,7 @@ class AdminManager:
     def confirm_booking(booking_id):
         booking = AdminManager._validate_booking_status(booking_id)
         booking.status = BookingStatus.confirmed
+        # TODO: assign vehicle to booking
         booking.last_modified = datetime.utcnow()
         # TODO: send email to the user
         db.session.add(booking)

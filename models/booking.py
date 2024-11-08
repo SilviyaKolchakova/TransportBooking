@@ -5,6 +5,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from db import db
 from models import User
+from models.vehicle import Vehicle
 from models.enums import BookingStatus
 
 
@@ -34,3 +35,8 @@ class Booking(db.Model):
     )
     user_pk: Mapped[int] = mapped_column(db.Integer, db.ForeignKey("users.pk"))
     user: Mapped["User"] = relationship("User")
+
+    vehicle_pk: Mapped[int] = mapped_column(
+        db.Integer, db.ForeignKey("vehicles.pk"), nullable=True
+    )
+    vehicle: Mapped["Vehicle"] = relationship("Vehicle")

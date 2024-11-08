@@ -10,12 +10,15 @@ class UserLoginSchema(Schema):
     password = fields.String(required=True)
 
     @validates("email")
-    def validate_email_kickbox(self, email):
-        kickbox_api_key = config("KICKBOX_API_KEY")
-        response = requests.get(
-            f"https://api.kickbox.com/v2/verify?email={email}&apikey={kickbox_api_key}"
-        )
-        return response.json()
+    def validate_email_with_kickbox(self, email):
+        api_key = config("KICKBOX_API_KEY")
+        url = f"https://api.kickbox.com/v2/verify?email={email}&apikey={api_key}"
+
+        response = requests.get(url)
+        result = response.json()
+
+        if result.get("result") != "deliverable":
+            raise ValidationError("Invalid or undeliverable email address.")
 
     @validates("password")
     def validate_password(self, password):

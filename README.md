@@ -7,18 +7,21 @@ A RESTful API for managing a passenger transportation booking service, allowing 
 - **SQLAlchemy**: ORM (Object Relational Mapper) for managing database interactions.
 - **Argon2**: A secure password hashing algorithm used for user authentication.
 - **JWT (JSON Web Token)**: For authentication and authorization.
+- **Kickbox**: For email validation
 
 ## Features
 * __User Management__:
 
-    * User roles: Admin and Client.
+    * Admin role: 
+        Add, edit, delete vehicle. Edit booking status. Create admins. Display access to all vehicles and bookings.
+    * User role: Create booking. Display access to bookings, created by him. Display access to all vehicles.
     * JWT-based authentication and authorization for secured access.
-    * Password validation
+    * Password hashing and validation
   
 
 * __Booking Management__:
     * Admin and Client permissions for booking.
-    * Routes for creating, updating, and canceling bookings.
+    * Routes for creating, confirming and canceling bookings.
     * Status tracking for booking confirmation and payment.
 
 
@@ -26,8 +29,8 @@ A RESTful API for managing a passenger transportation booking service, allowing 
     * Admin routes for adding, updating, and deleting vehicles.
  
     
-* __Stripe Integration__:
-    * API integration for online payments.
+* __Payment Integration__:
+    * Payment provider integration for online payments with Stripe.
   
 
 
@@ -50,16 +53,16 @@ A RESTful API for managing a passenger transportation booking service, allowing 
     ```
 6. Set Environment Variables:
 
-    * Configure required variables: DB_USER, DB_PASSWORD, DB_PORT, DB_NAME, SECRET_KEY, CONFIG_ENV, ALGORITHMS, STRIPE_API_KEY, STRIPE_ACCOUNT_ID, STRIPE_BASE_URL
+    * Configure required variables: DB_USER, DB_PASSWORD, DB_PORT, DB_NAME, SECRET_KEY, CONFIG_ENV, ALGORITHMS, STRIPE_API_KEY, STRIPE_ACCOUNT_ID, STRIPE_BASE_URL, KICKBOX_API_KEY
 
 ## API Endpoints
 ### User endpoints
-* `POST /register`: Register a new user.
+* `POST /register`: Register a new user. 
 * `POST /login`: Authenticate user and get a token.
 
 
 ### Booking Endpoints
-* `POST /bookings`: Create a new booking (User)
+* `POST /bookings`: Create a new booking (User). Protected for authenticated users
 * `PUT /bookings/<id>/confirm`: Confirm a booking (Admin).
 * `PUT /bookings/<id>/cancel`: Cancel a booking (Admin)
 
@@ -88,3 +91,16 @@ User authentication is handled via JSON Web Tokens (JWT), which are required for
 Stripe processes amounts in the smallest unit of the currency. For instance, USD uses cents, so an amount of $10 should be represented as 1000 (10 dollars × 100).
 
 In this application, when processing payments for bookings, ensure that the booking amount is multiplied by 100 before sending it to Stripe. This conversion ensures accurate payment amounts when Stripe interprets it in the smallest unit of the selected currency.
+
+## TODO / Planned Features
+
+- [ ] Implement logout functionality
+- [ ] Add email notifications for booking status change
+- [ ] Send invoice via email after successful payment
+- [ ] Integrate a rating system for transportation services
+- [ ] Improve error handling
+- [ ] Add more detailed documentation for API endpoints
+- [ ] Assign vehicle to confirmed booking (admin)
+
+## Postman Collection
+Download the [Postman collection](https://transport-booking-app.postman.co/workspace/Transport-booking-app-Workspace~5539a83d-5883-460e-991d-4f407dec3230/collection/24579265-520cdc91-3ca0-47a2-a5c6-9bb1e97d27b5?action=share&creator=24579265).
