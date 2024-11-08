@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from argon2 import PasswordHasher
-from werkzeug.exceptions import Unauthorized
+from werkzeug.exceptions import Unauthorized, BadRequest
 
 from constants import RENT_PRICE_PER_DAY
 from db import db
@@ -9,7 +9,7 @@ from db import db
 
 from managers.auth import AuthManager, auth
 from models.booking import Booking
-from models.enums import UserRole
+from models.enums import UserRole, BookingStatus
 from models.user import User
 
 from services.stripe import StripeService
@@ -58,10 +58,8 @@ class UserManager:
 
         start_date = datetime.strptime(data["start_date"], "%Y-%m-%d")
         end_date = datetime.strptime(data["end_date"], "%Y-%m-%d")
-        data["rent_days"] = ((end_date - start_date).days) + 1
-        data["amount"] = (
-            data["rent_days"] * RENT_PRICE_PER_DAY
-        )
+        data["rent_days"] = (end_date - start_date).days + 1
+        data["amount"] = data["rent_days"] * RENT_PRICE_PER_DAY
 
         booking = Booking(**data)
         current_user = auth.current_user()
@@ -79,8 +77,11 @@ class UserManager:
 
         stripe_customer = stripe_service.create_customer(customer_name, customer_email)
         stripe_customer_id = stripe_customer["id"]
+        stripe_amount = (
+            booking.amount * 100
+        )  # stripe uses the smallest common currency unit so we multiply by 100 for amount in leva
         url = stripe_service.create_checkout_session(
-            stripe_customer_id, booking.amount, currency="bgn", booking_id=booking.pk
+            stripe_customer_id, stripe_amount, currency="bgn", booking_id=booking.pk
         )
         return url
 
@@ -89,9 +90,11 @@ class UserManager:
         retrieve_session = stripe_service.retrieve_checkout_session(session_id)
         session_booking_id = retrieve_session["metadata"]
         booking_id = session_booking_id["booking_id"]
-        # TODO : да se prawi proerlka dali ima booking i kakyv mu e statusa. Da vidq kyde da premestq tazi logika
+
         booking = db.session.execute(
             db.select(Booking).filter_by(pk=booking_id)
         ).scalar()
+        if booking.status == BookingStatus.canceled:
+            raise BadRequest("Booking cancelled")
         booking.is_paid = True
         db.session.commit()

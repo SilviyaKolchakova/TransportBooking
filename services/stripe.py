@@ -42,8 +42,13 @@ class StripeService:
         response = requests.post(url, headers=self.headers, data=data)
 
         if response.status_code == 200:
-
-            return response.json()
+            response = response.json()
+            cs_id = response["id"]
+            url = response["url"]
+            return {
+                "url": url,
+                "cs_id": cs_id,
+            }
         else:
             return {"error": response.json()}
 

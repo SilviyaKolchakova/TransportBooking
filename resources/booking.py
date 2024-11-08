@@ -57,6 +57,7 @@ class BookingDelete(Resource):
         # TODO: add functionality
         pass
 
+
 # TODO: create class BookingVehicleAssign. Admins to assign vehicle to confirmed bookings.
 
 

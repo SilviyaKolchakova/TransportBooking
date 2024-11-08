@@ -58,17 +58,17 @@ A RESTful API for managing a passenger transportation booking service, allowing 
 * `POST /login`: Authenticate user and get a token.
 
 
-## Booking Endpoints
+### Booking Endpoints
 * `POST /bookings`: Create a new booking (User)
 * `PUT /bookings/<id>/confirm`: Confirm a booking (Admin).
 * `PUT /bookings/<id>/cancel`: Cancel a booking (Admin)
 
-## Vehicle Endpoints
+### Vehicle Endpoints
 * `POST /vehicles`: Add a new vehicle (Admin)
 * `PUT /vehicles/<id>`: Update a vehicle (Admin)
 * `DELETE /vehicles/<id>`: Delete a vehicle (Admin)
 
-## Payment Endpoints
+### Payment Endpoints
 * `POST /payments/create-checkout-session`: Initiate payment for a booking.
 
 ## Data validation
@@ -84,4 +84,7 @@ The schemas enforce validation and transformation of data, ensuring that all inp
 ## Authentication and Authorization
 User authentication is handled via JSON Web Tokens (JWT), which are required for all protected routes. Roles (e.g., user, admin) restrict access to specific endpoints to ensure appropriate authorization for each action.
 
- 
+## Important Note on Amounts and Stripe Payments
+Stripe processes amounts in the smallest unit of the currency. For instance, USD uses cents, so an amount of $10 should be represented as 1000 (10 dollars × 100).
+
+In this application, when processing payments for bookings, ensure that the booking amount is multiplied by 100 before sending it to Stripe. This conversion ensures accurate payment amounts when Stripe interprets it in the smallest unit of the selected currency.

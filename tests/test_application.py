@@ -1,7 +1,5 @@
-from flask_testing import TestCase
-
 from models import UserRole, User
-from tests.base import generate_token, APIBaseTestCase
+from tests.base import generate_token, APIBaseTestCase, register_user
 from tests.factories import UserFactory
 
 
@@ -83,47 +81,13 @@ class TestProtectedEndpoints(APIBaseTestCase):
 
 
 class TestRegisterSchema(APIBaseTestCase):
-    def register_user(self, *args, **kwargs):
-        # data = {
-        #     "email": "test1bg",  # email value is not valid
-        #     "password": "Testpass1!",
-        #     "full_name": "Pol Mol",
-        # }
-
-        data, message = args
-        users = User.query.all()
-        self.assertEqual(len(users), 0)
-
-        response = self.client.post("/register", json=data)
-        self.assertEqual(response.status_code, 400)
-        expected_message = message
-        self.assertEqual(response.json, expected_message)
-
-        users = User.query.all()
-        self.assertEqual(len(users), 0)
-
-    # def test_register_schema_missing_fields(self):
-    #     data = {}
-    #
-    #     users = User.query.all()
-    #     self.assertEqual(len(users), 0)
-    #
-    #     response = self.client.post("/register", json=data)
-    #     self.assertEqual(response.status_code, 400)
-    #     expected_message = {
-    #         "message": "Invalid request: {'email': ['Missing data for required field.'], 'password': ['Missing data for required field.'], 'full_name': ['Missing data for required field.']}"
-    #     }
-    #     self.assertEqual(response.json, expected_message)
-    #
-    #     users = User.query.all()
-    #     self.assertEqual(len(users), 0)
 
     def test_register_schema_missing_fields(self):
         data = {}
         expected_message = {
             "message": "Invalid request: {'email': ['Missing data for required field.'], 'password': ['Missing data for required field.'], 'full_name': ['Missing data for required field.']}"
         }
-        return TestRegisterSchema.register_user(self, data, expected_message)
+        return register_user(self, data, expected_message)
 
     def test_register_schema_invalid_email(self):
         data = {
@@ -134,18 +98,19 @@ class TestRegisterSchema(APIBaseTestCase):
         expected_message = {
             "message": "Invalid request: {'email': ['Not a valid email address.']}"
         }
-        return TestRegisterSchema.register_user(self, data, expected_message)
+        return register_user(self, data, expected_message)
 
     def test_register_schema_invalid_password(self):
         data = {
             "email": "test1@j.bg",
-            "password": "test", # password value is not valid
+            "password": "test",  # password value is not valid
             "full_name": "Pol Mol",
         }
         expected_message = {
-            "message": "Invalid request: {'password': ['Not a valid password.']}"
+            "message": "Invalid request: {'password': ['Password must be at least 8 "
+            "characters long.']}"
         }
-        return TestRegisterSchema.register_user(self, data, expected_message)
+        return register_user(self, data, expected_message)
 
     # TODO: test not valid passowrd (separate test for each requirement, not valid full_name
 
@@ -177,7 +142,7 @@ class TestLoginSchema(APIBaseTestCase):
     def test_login_schema_invalid_email(self):
         data = {
             "email": "test1bg",  # email value is not valid
-            "password": "testpass",
+            "password": "Testpass1@",
             "full_name": "Pol Mol",
         }
 
