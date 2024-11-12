@@ -1,3 +1,4 @@
+
 from resources.auth import RegisterUser, LoginUser
 from resources.booking import (
     BookingConfirm,
@@ -18,4 +19,5 @@ routes = (
     (VehicleResource, "/vehicles/<int:vehicle_id>"),
     (PaymentSuccess, "/payment/success/<string:session_id>"),
     (PaymentFailure, "/payment/failure"),
+    # (Home, "/")
 )

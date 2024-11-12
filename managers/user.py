@@ -5,13 +5,10 @@ from werkzeug.exceptions import Unauthorized, BadRequest
 
 from constants import RENT_PRICE_PER_DAY
 from db import db
-
-
 from managers.auth import AuthManager, auth
 from models.booking import Booking
 from models.enums import UserRole, BookingStatus
 from models.user import User
-
 from services.stripe import StripeService
 
 stripe_service = StripeService()
@@ -43,7 +40,6 @@ class UserManager:
 
     @staticmethod
     def get_bookings(user):
-        # TODO: to check how it was handled in the previous course
         query = db.select(Booking)
 
         if user.role == UserRole.user:
@@ -79,7 +75,7 @@ class UserManager:
         stripe_customer_id = stripe_customer["id"]
         stripe_amount = (
             booking.amount * 100
-        )  # stripe uses the smallest common currency unit so we multiply by 100 for amount in leva
+        )  # stripe uses the smallest common currency unit, so we multiply by 100 for amount in leva
         url = stripe_service.create_checkout_session(
             stripe_customer_id, stripe_amount, currency="bgn", booking_id=booking.pk
         )

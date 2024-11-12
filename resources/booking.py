@@ -1,4 +1,4 @@
-from flask import request
+from flask import request, render_template
 from flask_restful import Resource
 
 from db import db
@@ -76,3 +76,9 @@ class PaymentSuccess(Resource):
 class PaymentFailure(Resource):
     def get(self):
         return "Your booking has failed to pay. Plaese...."  # TODO: to check what message should be returned
+
+
+# class Home(Resource):
+#     def get(self):
+#         return render_template('booking.html')  # Assumes 'index.html' is in the 'templates' folder
+
